@@ -38,12 +38,18 @@ let sequence =
 
 let isPrime n = sequence |> Seq.find (fun p -> p >= n) = n
 
-// perf could be made much better here if needed
+let nth n = 
+    sequence
+    |> Seq.skip n
+    |> Seq.head
+
 let factors n =
-    let rec f remainder primes =
-        match isPrime remainder with
-        | true -> remainder :: primes
-        | false ->            
-            let factor = sequence |> Seq.find (fun p -> remainder % p = 0L)
-            f (remainder / factor) (factor :: primes)
-    f n [] |> List.rev
+    let rec f remainder prime factors =
+        let nthPrime = nth prime
+        // perf could be better, eg only check with primes <= sqrt of remainder
+        // printfn "factors: %A remainder: %A prime %A:%A" factors remainder prime nthPrime
+        match remainder ,(remainder % nthPrime) with
+        | 1L, _ -> factors
+        | _, 0L -> f (remainder / nthPrime) prime (nthPrime :: factors)
+        | _ -> f remainder (prime + 1) factors
+    f n 0 [] |> List.rev
