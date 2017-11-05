@@ -40,7 +40,7 @@ let isPrime n = sequence |> Seq.find (fun p -> p >= n) = n
 
 let nth n = 
     sequence
-    |> Seq.skip n
+    |> Seq.skip (n - 1)
     |> Seq.head
 
 let factors n =
