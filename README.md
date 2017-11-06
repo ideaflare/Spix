@@ -1,2 +1,0 @@
-# Spix
-F# practice
