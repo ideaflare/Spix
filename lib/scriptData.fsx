@@ -5,4 +5,6 @@ let dataPath (sourceFile: string) (sourceDirectory: string) =
 
 let dataText sourceFile sourceDirectory =
     dataPath sourceFile sourceDirectory
-    |> System.IO.File.ReadAllText
+    |> System.IO.File.ReadAllLines
+    |> (fun lines -> System.String.Join("", lines))
+    
