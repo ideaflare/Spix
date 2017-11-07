@@ -3,8 +3,11 @@ let dataPath (sourceFile: string) (sourceDirectory: string) =
     let dataPath = System.IO.Path.Combine(sourceDirectory,"..","data/" + dataFile)
     dataPath
 
-let dataText sourceFile sourceDirectory =
+let dataRows sourceFile sourceDirectory =
     dataPath sourceFile sourceDirectory
     |> System.IO.File.ReadAllLines
+    |> List.ofArray
+
+let dataText sourceFile sourceDirectory =
+    dataRows sourceFile sourceDirectory
     |> (fun lines -> System.String.Join("", lines))
-    
