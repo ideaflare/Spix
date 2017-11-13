@@ -36,12 +36,11 @@ let sequence =
     |> Seq.takeWhile (fun p -> p <= System.Int64.MaxValue)
     |> Seq.cache
 
-let isPrime n = sequence |> Seq.find (fun p -> p >= n) = n
+let private primeMap = System.Collections.Concurrent.ConcurrentDictionary<int, int64>()
 
-let nth n = 
-    sequence
-    |> Seq.skip (n - 1)
-    |> Seq.head
+let nth n =
+    let ithPrime i = sequence |> Seq.skip (i - 1) |> Seq.head
+    primeMap.GetOrAdd(n, ithPrime)
 
 let factors n =
     let rec f remainder prime factors =
