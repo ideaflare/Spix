@@ -6,8 +6,6 @@ let firstDigits n =
     |> Seq.map (string >> System.Numerics.BigInteger.Parse)
     |> Seq.reduce (+)
     |> string
-    |> Seq.take n
-    |> Seq.toArray
-    |> (fun chars -> System.String(chars))
+    |> (fun i -> i.Substring(0, n))
 
 printfn "real = %A" (firstDigits 10)
