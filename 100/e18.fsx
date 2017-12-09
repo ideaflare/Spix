@@ -10,19 +10,17 @@ let grid = data |> List.map splitToCells
 
 let upsideDownTriangle = grid |> List.rev
 
-let rec sumUpwards (triangle: int list list) =
-    match triangle with
-    | [[top]] -> top
-    | readRow :: addRow :: rest ->
-        let maxParents =
-            readRow
+let rec sumMaxParentsDown (upsideDownTriangle: int list list) =
+    match upsideDownTriangle with
+    | [[maxPathSum]] -> maxPathSum
+    | topRow :: children :: restOfTriangle ->
+        let childrenAddMaxParent =
+            topRow
             |> List.windowed 2
             |> List.map (List.max)
-        let addedTopRow =
-            maxParents
-            |> List.zip addRow
-            |> List.map (fun (a,b) -> a + b)
-        sumUpwards (addedTopRow :: rest)
-    | _ -> 0   
+            |> List.zip children
+            |> List.map (fun (child, maxParent) -> child + maxParent)
+        sumMaxParentsDown (childrenAddMaxParent :: restOfTriangle)
+    | _ -> 0
 
-printfn "real = %A" (sumUpwards upsideDownTriangle)
+printfn "real = %A" (sumMaxParentsDown upsideDownTriangle)
