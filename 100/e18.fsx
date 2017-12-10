@@ -1,14 +1,7 @@
 #load "../lib/scriptData.fsx"
 let data = ScriptData.dataRows __SOURCE_FILE__ __SOURCE_DIRECTORY__
 
-let splitToCells (txt : string) =
-    txt.Split [|' '|]
-    |> List.ofArray
-    |> List.map int
-
-let grid = data |> List.map splitToCells
-
-let upsideDownTriangle = grid |> List.rev
+let upsideDownTriangle = ScriptData.parseGrid data |> List.rev
 
 let rec sumMaxParentsDown (upsideDownTriangle: int list list) =
     match upsideDownTriangle with

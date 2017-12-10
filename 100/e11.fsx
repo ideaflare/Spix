@@ -1,12 +1,7 @@
 #load "../lib/scriptData.fsx"
 let data = ScriptData.dataRows __SOURCE_FILE__ __SOURCE_DIRECTORY__
 
-let splitToCells (txt : string) =
-    txt.Split [|' '|]
-    |> List.ofArray
-    |> List.map int
-
-let grid = data |> List.map splitToCells
+let grid = ScriptData.parseGrid data
 
 // todo move to reusable lib - *or* - do the nested looping with seq?
 let cartesian xs ys = 

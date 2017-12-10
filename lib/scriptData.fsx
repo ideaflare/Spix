@@ -11,3 +11,10 @@ let dataRows sourceFile sourceDirectory =
 let dataText sourceFile sourceDirectory =
     dataRows sourceFile sourceDirectory
     |> (fun lines -> System.String.Join("", lines))
+
+let splitToCells (txt : string) =
+    txt.Split [|' '|]
+    |> List.ofArray
+    |> List.map int
+
+let parseGrid = List.map splitToCells
