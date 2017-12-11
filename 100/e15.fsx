@@ -1,17 +1,12 @@
-let factorial n =
-    let rec f' n product =
-        match n with
-        | fin when fin < 2I -> product
-        | _ -> f' (n - 1I) (product * n)
-    f' n 1I
+#load "../lib/combinatorics.fsx"
 
 // Explanation
 // Eacn path goes down [grid size] times, and right [grid size] times.
 // This is an ordering problem https://math.stackexchange.com/a/452
 
 let paths gridSize =
-    let allOrderings = factorial (gridSize * 2I)
-    let downOrRight = factorial gridSize
+    let allOrderings = Combinatorics.factorial (gridSize * 2I)
+    let downOrRight = Combinatorics.factorial gridSize
     allOrderings / (downOrRight * downOrRight)
 
 
