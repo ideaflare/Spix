@@ -1,9 +1,5 @@
-let rec digits = function
-    | digit when digit < 10 -> [digit]
-    | aboveTen ->
-        let aboveWithoutLastDigit = aboveTen / 10
-        let digit = aboveTen - (aboveWithoutLastDigit * 10)
-        digit :: (digits aboveWithoutLastDigit)
+#load "../lib/numeral.fsx"
+let digits = Numeral.digits
 
 let pandigital (a,b,product) =
     digits a @ digits b @ digits product
