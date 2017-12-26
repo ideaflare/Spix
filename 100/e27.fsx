@@ -2,13 +2,18 @@
 
 let eulersQuadratic n = n * n + n + 41L
 
+let isPrime n =
+    Prime.sequence 
+    |> Seq.skipWhile (fun prime -> prime < n)
+    |> Seq.head = n
+
 let consecutivePrimes formula =
     Seq.initInfinite (int64 >> formula)
-    |> Seq.takeWhile Prime.isPrime
+    |> Seq.takeWhile isPrime
     |> Seq.length
 
 printfn "test consecutivePrimes eulersQuadratic (40) = %A" (consecutivePrimes eulersQuadratic)
-printfn "test eulersQuadratic isPrime 40 (false) = %A" (eulersQuadratic 40L |> int64 |> Prime.isPrime)
+printfn "test eulersQuadratic isPrime 40 (false) = %A" (eulersQuadratic 40L |> int64 |> isPrime)
 
 let incredibleFormula n = n * n + (-79L * n) + 1601L
 

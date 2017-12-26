@@ -42,11 +42,6 @@ let nth n =
     let ithPrime i = sequence |> Seq.skip (i - 1) |> Seq.head
     primeMap.GetOrAdd(n, ithPrime)
 
-let isPrime n =
-    sequence 
-    |> Seq.skipWhile (fun prime -> prime < n)
-    |> Seq.head = n
-
 let factors n =
     let rec f remainder prime factors =
         let nthPrime = nth prime
