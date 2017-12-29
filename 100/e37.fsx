@@ -7,18 +7,14 @@ let truncateRight n =
         | n ->
             let ns = n / 10
             t' ns (ns :: acc)
-    t' n [] |> List.rev
+    t' n []
 
-let (^^) a b =
-    List.init b (fun _ -> a)
-    |> List.fold (*) 1
-
-let truncateLeft rightParts n =
-    let rightr main sub idx = 
-        let remain = sub * (10 ^^ (idx + 1))
-        main - remain
-    rightParts
-    |> List.mapi (fun idx sub -> rightr n sub idx)
+let truncateLeft n =
+    let rec t' acc modDigit =
+        match n % modDigit with
+        | t when t < n -> t' (t :: acc) (modDigit * 10)
+        | _ -> acc
+    t' [] 10
 
 let primes = Prime.sequence |> Seq.take 1000000 |> Seq.map int |> Set.ofSeq
 
@@ -26,9 +22,8 @@ let isPrime = primes.Contains
 
 let bothTruncationsPrime n =
     let rightParts = truncateRight n
-    let leftParts = truncateLeft rightParts n
+    let leftParts = truncateLeft n
     Seq.forall isPrime rightParts && Seq.forall isPrime leftParts
-
 
 printfn "test bothTruncationsPrime 3797 (true) = %A" (bothTruncationsPrime 3797)
 
