@@ -5,25 +5,23 @@ let maybeIntegralHypotenuse a b =
     if hypotenuse * hypotenuse = hypotenuseSquared
     then Some(hypotenuse) else None
 
-type Triangle = { Sides: int * int * int } with
-    member me.Perimeter = 
-        let (a,b,c) = me.Sides
-        a + b + c
-
-let maybeIntegralTriangle a b =
+let maybeIntegralTriangle (a, b) =
     maybeIntegralHypotenuse a b
-    |> Option.map (fun h -> {Sides = a,b,h})
+    |> Option.map (fun h -> (a,b,h))
 
 let integralTriangles =
-    [1..1000]
-    |> List.collect (fun a -> [a..1000] |> List.map (fun b -> maybeIntegralTriangle a b))
-    |> List.choose id
+    seq {
+        for a in 1..1000 do
+        for b in a..1000 do 
+        yield  (a, b)
+    }
+    |> Seq.choose maybeIntegralTriangle
 
 let mostSolutionsPerimeter =
     integralTriangles
-    |> List.groupBy (fun t -> t.Perimeter)
-    |> List.filter (fun (perimeter,_) -> perimeter < 1000)
-    |> List.maxBy (fun (_, solutions) -> solutions.Length)
+    |> Seq.groupBy (fun (a,b,c) -> a + b + c)
+    |> Seq.filter (fun (perimeter,_) -> perimeter < 1000)
+    |> Seq.maxBy (fun (_, solutions) -> Seq.length solutions)
     |> (fun (perimeter, _) -> perimeter)
 
 printfn "real = %A" (mostSolutionsPerimeter)
