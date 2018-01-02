@@ -6,3 +6,5 @@ let digits =
             let digit = aboveTen - (aboveWithoutLastDigit * 10)
             digit :: (reversedDigits aboveWithoutLastDigit)
     reversedDigits >> List.rev
+
+let digitListToInt digits = Seq.fold (fun acc d -> (10 * acc) + d) 0 digits
