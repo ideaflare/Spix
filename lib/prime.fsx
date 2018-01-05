@@ -52,3 +52,10 @@ let factors n =
         | _, 0L -> f (remainder / nthPrime) prime (nthPrime :: factors)
         | _ -> f remainder (prime + 1) factors
     f n 0 [] |> List.rev
+
+let isPrime n =
+    n > 1L &&
+    let root = sqrt (float n) |> int64
+    sequence
+    |> Seq.takeWhile (fun p -> p <= root)
+    |> Seq.forall (fun test -> n % test <> 0L)
