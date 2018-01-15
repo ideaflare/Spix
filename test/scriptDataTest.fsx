@@ -1,4 +1,3 @@
-open ScriptData
 #load "../lib/scriptData.fsx"
 
 let ``dataText`` () =
