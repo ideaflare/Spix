@@ -12,6 +12,10 @@ let dataText sourceFile sourceDirectory =
     dataRows sourceFile sourceDirectory
     |> (fun lines -> System.String.Join("", lines))
 
+let dataCommaSeparatedLine sourceFile sourceDirectory =
+    dataText sourceFile sourceDirectory
+    |> (fun (data : string) -> data.Replace("\"","").Split(','))
+
 let splitToCells (txt : string) =
     txt.Split [|' '|]
     |> List.ofArray
