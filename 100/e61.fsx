@@ -10,15 +10,10 @@ let octagonal n = n * (3 * n - 2)
 
 let digits = Function.memoize Numeral.digits
 
-let noTrailingZeros n =
-    let reversedNumber = digits n |> List.rev |> Numeral.digitListToInt
-    digits reversedNumber |> Seq.length = 4
-
 let polygonalSequence f =
     Seq.initInfinite f
     |> Seq.skipWhile ((>) 1000)
     |> Seq.takeWhile ((>) 10000)
-    |> Seq.filter noTrailingZeros
     |> List.ofSeq
 
 let polygonals = [octagonal;heptagonal;hexagonal;pentagonal;square;triangle] |> List.map polygonalSequence
