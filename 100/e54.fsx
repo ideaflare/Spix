@@ -1,7 +1,5 @@
-// Type Unknown used to avoid FS0025 (Incomplete pattern match). Refactor with F# 4.1 Result<'TSuccess, 'TError> type.
-
-type Face = Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King | Ace | UnknownFace
-type Suit = Club | Diamond | Heart | Spade | UnknownSuit
+type Face = Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King | Ace
+type Suit = Club | Diamond | Heart | Spade
 
 type Card = {face : Face; suit : Suit}
 
@@ -57,42 +55,56 @@ let rank cards =
 
 let parseFace =
     function
-    | '2' -> Two
-    | '3' -> Three
-    | '4' -> Four
-    | '5' -> Five
-    | '6' -> Six 
-    | '7' -> Seven 
-    | '8' -> Eight 
-    | '9' -> Nine
-    | 'T' -> Ten
-    | 'J' -> Jack 
-    | 'Q' -> Queen 
-    | 'K' -> King 
-    | 'A' -> Ace
-    | _ -> UnknownFace
+    | '2' -> Ok Two
+    | '3' -> Ok Three
+    | '4' -> Ok Four
+    | '5' -> Ok Five
+    | '6' -> Ok Six 
+    | '7' -> Ok Seven 
+    | '8' -> Ok Eight 
+    | '9' -> Ok Nine
+    | 'T' -> Ok Ten
+    | 'J' -> Ok Jack 
+    | 'Q' -> Ok Queen 
+    | 'K' -> Ok King 
+    | 'A' -> Ok Ace
+    | face -> sprintf "Unknown face [%c]" face |> Error
 
 let parseSuit =
     function
-    | 'C' -> Club
-    | 'D' -> Diamond 
-    | 'H' -> Heart 
-    | 'S' -> Spade
-    | _ -> UnknownSuit
+    | 'C' -> Ok Club
+    | 'D' -> Ok Diamond 
+    | 'H' -> Ok Heart 
+    | 'S' -> Ok Spade
+    | suit -> sprintf "Unknown suit [%c]" suit |> Error
 
 let parseCard cardText =
-    let faceText = cardText |> Seq.head
-    let suitText = cardText |> Seq.skip 1 |> Seq.head
-    {face = parseFace faceText; suit = parseSuit suitText }
-    
+    match List.ofSeq cardText with
+    | [faceChar;suitChar] ->
+        parseFace faceChar
+        |> Result.bind ( fun face ->
+            parseSuit suitChar
+            |> Result.map (fun suit ->
+                {face = face;suit = suit}
+            )
+        )
+    | card -> sprintf "Card should be 2 characters, not %A" card |> Error
+
 let playerOneWin (row:string) =
-    let cards = row.Split(' ') |> Seq.map parseCard |> List.ofSeq
-    let p1 = List.take 5 cards
-    let p2 = List.skip 5 cards |> List.take 5
-    let rank1, rankHigh1 = rank p1
-    let rank2, rankHigh2 = rank p2
-    rank1 > rank2 ||
-    (rank1 = rank2 && rankHigh1 > rankHigh2)
+    let cardResults = row.Split(' ') |> Seq.map parseCard |> List.ofSeq
+    let errors = cardResults |> List.choose (function | Error msg -> Some msg | _ -> None)
+    if List.isEmpty errors
+    then
+        let cards = cardResults |> List.choose (function | Ok card -> Some card | _ -> None)
+        let p1 = List.take 5 cards
+        let p2 = List.skip 5 cards |> List.take 5
+        let rank1, rankHigh1 = rank p1
+        let rank2, rankHigh2 = rank p2
+        rank1 > rank2 ||
+        (rank1 = rank2 && rankHigh1 > rankHigh2)
+    else
+        errors |> List.iter (fun errMsg -> printfn "Parse error:\n%s\n" errMsg)
+        false
 
 let testPlayer2WinHigherPair = not (playerOneWin "5H 5C 6S 7S KD 2C 3S 8S 8D TD")
 let testPlayer1WinHigherCard = playerOneWin "5D 8C 9S JS AC 2C 5C 7D 8S QH"
@@ -100,11 +112,16 @@ let testPlayer2WinFlushDiamond = not (playerOneWin "2D 9C AS AH AC 3D 6D 7D TD Q
 let testPlayer1WinSameRankHighCard = playerOneWin "4D 6S 9H QH QC 3D 6D 7H QD QS"
 let testPlayer1WinSameRankHigherRank = playerOneWin "2H 2D 4C 4D 4S 3C 3D 3S 9S 9D"
 
+let testExampleParseError = playerOneWin "2H 2d 4C 4D zS 3_notRequired_C 3D 3S 9S 9D"
+
+
 printfn "Player two higher pair wins (%b)" (testPlayer2WinHigherPair)
 printfn "Player one higher card wins (%b)" (testPlayer1WinHigherCard)
 printfn "Player two flush diamond wins (%b)" (testPlayer2WinFlushDiamond)
 printfn "Player one same rank, high card wins (%b)" (testPlayer1WinSameRankHighCard)
 printfn "Player one same rank, higher rank wins (%b)" (testPlayer1WinSameRankHigherRank)
+
+printfn "For F# practice only, example of parse errors (%b)" (testExampleParseError)
 
 #load "../lib/scriptData.fsx"
 let data = ScriptData.dataRows __SOURCE_FILE__ __SOURCE_DIRECTORY__
