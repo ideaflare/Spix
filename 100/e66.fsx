@@ -6,9 +6,8 @@ let bigSquare = fun b -> Big.Pow(b,2)
 
 let rootPow b = (bigSquare b, b)
 
-let bigSqrt (b:Big) =
-    let possibleRoot = Seq.initInfinite Big |> Seq.skip 1 |> Seq.find (fun i -> i * i >= b)
-    if possibleRoot * possibleRoot = b then Some(possibleRoot) else None
+#load "../lib/bigHelpers.fsx"
+let bigSqrt = BigHelpers.maybeSquare
 
 let hasYSolution d x =
     let lhs x y = (bigSquare x) - (d * (bigSquare y))
@@ -43,4 +42,4 @@ let largestMinimalX dMax =
     |> List.max
 
 #time
-printfn "real = %A" (largestMinimalX 65)
+printfn "real = %A" (largestMinimalX 50)
