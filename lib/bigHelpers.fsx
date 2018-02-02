@@ -15,7 +15,6 @@ let rec incrementTowardsSquare guess square =
 let newtonRaphson fx dx target =
     let rec nr' guess (previousGuesses:Set<System.Numerics.BigInteger>) i =
         let newGuess = guess - ((fx guess) / (dx guess))
-        printfn "guess %A" newGuess
         if previousGuesses.Contains(newGuess) || i > 100
         then incrementTowardsSquare guess target
         else nr' newGuess (previousGuesses.Add(newGuess)) (i + 1)
