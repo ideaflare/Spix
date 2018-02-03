@@ -1,8 +1,9 @@
+// https://en.wikipedia.org/wiki/Pell%27s_equation#Fundamental_solution_via_continued_fractions
+
 type Big = System.Numerics.BigInteger
 
-#load "../lib/function.fsx"
-
 let bigSquare = fun b -> Big.Pow(b,2)
+<<<<<<< HEAD
 
 let rootPow b = (bigSquare b, b)
 
@@ -35,6 +36,42 @@ let findX d =
             (x,d)
         else fx' d (x + 1I)
     fx' d 1I
+=======
+let lhs d x y = (bigSquare x) - (d * (bigSquare y))
+
+type Rational = { Numerator : Big; Denominator : Big} with
+    static member Create n d = {Numerator = n; Denominator = d}
+    static member Text (r:Rational) = sprintf "%A/%A" r.Numerator r.Denominator
+
+let sqrtFractionalExpansion n =
+    let squareFloor = n |> float |> sqrt |> int |> Big
+    let m, d, a = 0I, 1I, squareFloor
+    if (a * a = n)
+    then Seq.singleton (Rational.Create a 1I)
+    else
+        let num = squareFloor
+        let den = 1I
+        let rec fractionExpansion m d a num den numPrev denPrev =
+            seq {
+                let m = d * a - m;                    
+                let d = (n - m * m) / d;
+                let a = (squareFloor + m) / d;
+
+                let numerator = a * num + numPrev
+                let denominator = a * den + denPrev
+
+                yield (Rational.Create numerator denominator)
+
+                yield! fractionExpansion m d a numerator denominator num den
+        }
+        fractionExpansion m d a num den 1I 0I
+        
+
+let findX d =
+    sqrtFractionalExpansion d
+    |> Seq.find (fun r -> bigSquare(r.Numerator) - d * bigSquare(r.Denominator) = 1I)
+    |> (fun r -> d, r.Numerator)
+>>>>>>> 66
 
 let isSquare n =
     let intRoot = int (sqrt (float n))
@@ -44,8 +81,16 @@ let largestMinimalX dMax =
     [2..dMax]
     |> List.filter (isSquare >> not)
     |> List.map (Big >> findX)
+<<<<<<< HEAD
     |> List.maxBy (fun (x,d) -> x)
     |> (fun (x,d) -> d)
 
 #time
 printfn "real = %A" (largestMinimalX 7)
+=======
+    |> List.maxBy (fun (d,x) -> x)
+    |> (fun (d,_) -> d)
+
+#time
+printfn "real = %A" (largestMinimalX 1000)
+>>>>>>> 66
