@@ -5,6 +5,10 @@ let factorial n =
         | _ -> f' (n - 1I) (product * n)
     f' n 1I
 
+// Note
+// Rermutations only works for unique iemts.
+//  eg. [0;1;1;1] doesn't produce all possible permutations correctly because of List.except
+
 let rec permutations items =
     seq {
         match items with
