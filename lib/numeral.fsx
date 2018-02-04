@@ -10,8 +10,8 @@ let digits =
             digit :: (reversedDigits aboveWithoutLastDigit)
     reversedDigits >> List.rev
 
-let digitListToInt digits = Seq.fold (fun acc d -> (10 * acc) + d) 0 digits
+let concatDigits digits = digits |> Seq.map string |> Seq.fold (+) "0"
 
-let digitListToBigInt digits =
-    let bigDigits = digits |> List.map (fun (i : int) -> System.Numerics.BigInteger(i))
-    bigDigits |> Seq.fold (fun acc d -> (10I * acc) + d) 0I
+let digitListToInt digits = concatDigits digits |> int
+
+let digitListToBigInt digits = digits |> concatDigits |> System.Numerics.BigInteger.Parse
