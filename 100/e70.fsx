@@ -1,18 +1,40 @@
 #load "../lib/prime.fsx"
 
-type RationalInt64 = { Numerator : int64; Denominator : int64} with
-    static member FromNumeratorDenominator n d = {Numerator = n; Denominator = d}
-    static member FromNumerator n = {Numerator = n; Denominator = 1L}
+let maxProduct = 1e7 |> int64
 
-let add r1 r2 = { Numerator = r1.Numerator * r2.Denominator + r2.Numerator * r1.Denominator;
-                  Denominator = r1.Denominator * r2.Denominator }
+let maxRoot = maxProduct |> float |> sqrt |> ceil |> int64
 
-let multiply r1 r2 = { Numerator = r1.Numerator * r2.Numerator;
-                       Denominator = r1.Denominator * r2.Denominator }
+let primesBelowMaxRoot =
+    Prime.sequence
+    |> Seq.takeWhile (fun p -> p <= maxRoot)
 
-let phi n =
-    Prime.factors n
-    |> Seq.distinct
-    |> Seq.map (fun p -> RationalInt64.FromNumeratorDenominator (p - 1L) p)
-    |> Seq.fold multiply (RationalInt64.FromNumerator n)
-    |> (fun r -> r.Numerator / r.Denominator)
+let pairsBelowMax =
+    primesBelowMaxRoot
+    |> Seq.collect (fun p1 ->
+        primesBelowMaxRoot
+        |> Seq.skipWhile (fun p2 -> p2 <= p1)
+        |> Seq.map (fun p2 -> (p1,p2))
+    )
+
+let pairPhi a b = (a - 1L) * (b - 1L)
+let permutation a b =
+    let aTxt = string a |> Seq.sort |> Seq.toList
+    let bTxt = string b |> Seq.sort |> Seq.toList
+    aTxt = bTxt
+
+let pairPhiIsPermutatoin (a,b) =
+    let product = a * b
+    let phi = pairPhi a b
+    if permutation product phi
+    then Some (product,phi) else None
+
+let ratio (n,phi) = (float n) / (float phi)
+
+let minNByPhiRatio =
+    pairsBelowMax
+    |> Seq.choose pairPhiIsPermutatoin
+    |> Seq.minBy ratio
+    |> fst
+
+printfn "real = %A" minNByPhiRatio
+
