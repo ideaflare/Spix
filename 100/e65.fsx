@@ -1,20 +1,13 @@
-type Big = System.Numerics.BigInteger
-
-type Rational = { Numerator : Big; Denominator : Big} with
-    static member Create n d = {Numerator = n; Denominator = d}
-
-let add r1 r2 = { Numerator = r1.Numerator * r2.Denominator + r2.Numerator * r1.Denominator;
-                  Denominator = r1.Denominator * r2.Denominator }
-
-let inverse rational = { Numerator = rational.Denominator; Denominator = rational.Numerator }
+#load "../lib/rational.fsx"
+open Rational
 
 let eApproximationSeries nTh =
-    let two  = Rational.Create 2I 1I
-    let one = Rational.Create 1I 1I
+    let two  = 2I /. 1I
+    let one = 1I /. 1I
     let k2Indexes = [2..3..(5 + nTh)]
     let kVal n =
         match List.tryFindIndex ((=) n) k2Indexes with
-        | (Some k) -> Rational.Create ((Big (k + 1)) * 2I) 1I
+        | (Some k) -> ((Big (k + 1)) * 2I) /. 1I
         | None -> one
     let eFractionSeries = List.map kVal [1..nTh]
     let reversedSeries = eFractionSeries |> List.rev

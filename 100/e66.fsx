@@ -1,19 +1,15 @@
 // https://en.wikipedia.org/wiki/Pell%27s_equation#Fundamental_solution_via_continued_fractions
-
-type Big = System.Numerics.BigInteger
+#load "../lib/rational.fsx"
+open Rational
 
 let bigSquare = fun b -> Big.Pow(b,2)
 let lhs d x y = (bigSquare x) - (d * (bigSquare y))
-
-type Rational = { Numerator : Big; Denominator : Big} with
-    static member Create n d = {Numerator = n; Denominator = d}
-    static member Text (r:Rational) = sprintf "%A/%A" r.Numerator r.Denominator
 
 let sqrtFractionalExpansion n =
     let squareFloor = n |> float |> sqrt |> int |> Big
     let m, d, a = 0I, 1I, squareFloor
     if (a * a = n)
-    then Seq.singleton (Rational.Create a 1I)
+    then Seq.singleton (a /. 1I)
     else
         let num = squareFloor
         let den = 1I
@@ -26,7 +22,7 @@ let sqrtFractionalExpansion n =
                 let numerator = a * num + numPrev
                 let denominator = a * den + denPrev
 
-                yield (Rational.Create numerator denominator)
+                yield (numerator /. denominator)
 
                 yield! fractionExpansion m d a numerator denominator num den
         }
